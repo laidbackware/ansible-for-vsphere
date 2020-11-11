@@ -77,7 +77,6 @@ EXAMPLES = r'''
     username: '{{ vcenter_username }}'
     password: '{{ vcenter_password }}'
     datacenter: ha-datacenter
-    validate_certs: no
   delegate_to: localhost
   register: cluster_info
 
@@ -105,7 +104,6 @@ EXAMPLES = r'''
     hostname: '{{ vcenter_hostname }}'
     username: '{{ vcenter_username }}'
     password: '{{ vcenter_password }}'
-    validate_certs: no
     cluster_name: DC0_C0
     schema: vsphere
     properties:
@@ -123,6 +121,7 @@ clusters:
     type: dict
     sample: {
         "DC0_C0": {
+            "moid": "domain-c9",
             "drs_default_vm_behavior": null,
             "drs_enable_vm_behavior_overrides": null,
             "drs_vmotion_rate": null,
@@ -311,7 +310,8 @@ class VmwreClusterInfoManager(PyVmomi):
                     enabled_vsan=enabled_vsan,
                     vsan_auto_claim_storage=vsan_auto_claim_storage,
                     tags=tag_info,
-                    resource_summary=resource_summary
+                    resource_summary=resource_summary,
+                    moid=cluster._moId,
                 )
         else:
             for cluster in self.cluster_objs:

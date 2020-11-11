@@ -103,7 +103,7 @@ def wait_for_vm_ip(content, vm, timeout=300):
 def find_obj(content, vimtype, name, first=True, folder=None):
     container = content.viewManager.CreateContainerView(folder or content.rootFolder, recursive=True, type=vimtype)
     # Get all objects matching type (and name if given)
-    obj_list = [obj for obj in container.view if not name or to_text(obj.name) == to_text(name)]
+    obj_list = [obj for obj in container.view if not name or to_text(unquote(obj.name)) == to_text(unquote(name))]
     container.Destroy()
 
     # Return first match or None
@@ -194,8 +194,8 @@ def find_resource_pool_by_cluster(content, resource_pool_name='Resources', clust
     return find_object_by_name(content, resource_pool_name, [vim.ResourcePool], folder=cluster)
 
 
-def find_network_by_name(content, network_name):
-    return find_object_by_name(content, quote_obj_name(network_name), [vim.Network])
+def find_network_by_name(content, network_name, datacenter_name=None):
+    return find_object_by_name(content, quote_obj_name(network_name), [vim.Network], datacenter_name)
 
 
 def find_vm_by_id(content, vm_id, vm_id_type="vm_name", datacenter=None,

@@ -93,9 +93,9 @@ extends_documentation_fragment:
 EXAMPLES = r'''
 - name: Create a category
   community.vmware.vmware_category:
-    hostname: "{{ vcenter_server }}"
-    username: "{{ vcenter_user }}"
-    password: "{{ vcenter_pass }}"
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
     category_name: Sample_Cat_0001
     category_description: Sample Description
     category_cardinality: 'multiple'
@@ -103,27 +103,27 @@ EXAMPLES = r'''
 
 - name: Rename category
   community.vmware.vmware_category:
-    hostname: "{{ vcenter_server }}"
-    username: "{{ vcenter_user }}"
-    password: "{{ vcenter_pass }}"
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
     category_name: Sample_Category_0001
     new_category_name: Sample_Category_0002
     state: present
 
 - name: Update category description
   community.vmware.vmware_category:
-    hostname: "{{ vcenter_server }}"
-    username: "{{ vcenter_user }}"
-    password: "{{ vcenter_pass }}"
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
     category_name: Sample_Category_0001
     category_description: Some fancy description
     state: present
 
 - name: Delete category
   community.vmware.vmware_category:
-    hostname: "{{ vcenter_server }}"
-    username: "{{ vcenter_user }}"
-    password: "{{ vcenter_pass }}"
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
     category_name: Sample_Category_0002
     state: absent
 
@@ -132,7 +132,6 @@ EXAMPLES = r'''
     hostname: '{{ vcenter_hostname }}'
     username: '{{ vcenter_username }}'
     password: '{{ vcenter_password }}'
-    validate_certs: False
     category_name: 'Sample_Category_0003'
     category_description: 'sample description'
     associable_object_types:
@@ -213,7 +212,7 @@ class VmwareCategory(VmwareRestClient):
                 elif lower_obj_type == 'distributed port group':
                     obj_types_set.append('DistributedVirtualPortgroup')
                 elif lower_obj_type == 'distributed switch':
-                    obj_types_set.append('VmwareDistributedVirtualSwitch')
+                    obj_types_set.extend(['VmwareDistributedVirtualSwitch', 'DistributedVirtualSwitch'])
                 elif lower_obj_type == 'host':
                     obj_types_set.append('HostSystem')
                 elif lower_obj_type == 'library item':
@@ -225,7 +224,7 @@ class VmwareCategory(VmwareRestClient):
                 elif lower_obj_type == 'virtual machine':
                     obj_types_set.append('VirtualMachine')
                 elif lower_obj_type == 'network':
-                    obj_types_set.append('Network')
+                    obj_types_set.extend(['Network', 'HostNetwork', 'OpaqueNetwork'])
                 elif lower_obj_type == 'host network':
                     obj_types_set.append('HostNetwork')
                 elif lower_obj_type == 'opaque network':

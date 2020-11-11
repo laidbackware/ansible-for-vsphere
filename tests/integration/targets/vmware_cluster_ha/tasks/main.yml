@@ -8,7 +8,7 @@
 # Setup: Create test cluster
 - name: Create test cluster
   vmware_cluster:
-    validate_certs: False
+    validate_certs: false
     hostname: "{{ vcenter_hostname }}"
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
@@ -19,13 +19,13 @@
 # Testcase 0001: Enable HA
 - name: Enable HA
   vmware_cluster_ha:
-    validate_certs: False
+    validate_certs: false
     hostname: "{{ vcenter_hostname }}"
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter_name: "{{ dc1 }}"
     cluster_name: test_cluster_ha
-    enable_ha: yes
+    enable_ha: true
   register: cluster_ha_result_0001
 
 - name: Ensure HA is enabled
@@ -36,13 +36,13 @@
 # Testcase 0002: Enable Slot based Admission Control
 - name: Enable Slot based Admission Control
   vmware_cluster_ha:
-    validate_certs: False
+    validate_certs: false
     hostname: "{{ vcenter_hostname }}"
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter_name: "{{ dc1 }}"
     cluster_name: test_cluster_ha
-    enable_ha: yes
+    enable_ha: true
     slot_based_admission_control:
       failover_level: 1
   register: cluster_ha_result_0002
@@ -55,13 +55,13 @@
 # Testcase 0003: Enable Cluster resource Percentage based Admission Control
 - name: Enable Cluster resource Percentage based Admission Control
   vmware_cluster_ha:
-    validate_certs: False
+    validate_certs: false
     hostname: "{{ vcenter_hostname }}"
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter_name: "{{ dc1 }}"
     cluster_name: test_cluster_ha
-    enable_ha: yes
+    enable_ha: true
     reservation_based_admission_control:
       auto_compute_percentages: false
       failover_level: 1
@@ -77,13 +77,13 @@
 # Testcase 0004: Set Isolation Response to powerOff
 - name: Set Isolation Response to powerOff
   vmware_cluster_ha:
-    validate_certs: False
+    validate_certs: false
     hostname: "{{ vcenter_hostname }}"
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter_name: "{{ dc1 }}"
     cluster_name: test_cluster_ha
-    enable_ha: yes
+    enable_ha: true
     host_isolation_response: 'powerOff'
   register: cluster_ha_result_0004
 
@@ -95,13 +95,13 @@
 # Testcase 0005: Set Isolation Response to shutdown
 - name: Set Isolation Response to shutdown
   vmware_cluster_ha:
-    validate_certs: False
+    validate_certs: false
     hostname: "{{ vcenter_hostname }}"
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter_name: "{{ dc1 }}"
     cluster_name: test_cluster_ha
-    enable_ha: yes
+    enable_ha: true
     host_isolation_response: 'shutdown'
   register: cluster_ha_result_0005
 
@@ -113,13 +113,13 @@
 # Testcase 0006: Disable HA
 - name: Disable HA
   vmware_cluster_ha:
-    validate_certs: False
+    validate_certs: false
     hostname: "{{ vcenter_hostname }}"
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter_name: "{{ dc1 }}"
     cluster_name: test_cluster_ha
-    enable_ha: no
+    enable_ha: false
   register: cluster_ha_result_0006
 
 - name: Ensure HA is disabled
@@ -131,7 +131,7 @@
   block:
   - name: Change advanced setting "number of heartbeat datastores" (check-mode)
     vmware_cluster_ha: &change_num_heartbeat_ds
-      validate_certs: False
+      validate_certs: false
       hostname: "{{ vcenter_hostname }}"
       username: "{{ vcenter_username }}"
       password: "{{ vcenter_password }}"
@@ -139,7 +139,7 @@
       cluster_name: test_cluster_ha
       advanced_settings:
           'das.heartbeatDsPerHost': '4'
-    check_mode: yes
+    check_mode: true
     register: change_num_heartbeat_ds_check
 
   - assert:
@@ -164,7 +164,7 @@
 
   - name: Change advanced setting "das.includeFTcomplianceChecks" (check-mode)
     vmware_cluster_ha: &change_includeFTcomplianceChecks
-      validate_certs: False
+      validate_certs: false
       hostname: "{{ vcenter_hostname }}"
       username: "{{ vcenter_username }}"
       password: "{{ vcenter_password }}"
@@ -172,7 +172,7 @@
       cluster_name: test_cluster_ha
       advanced_settings:
           'das.includeFTcomplianceChecks': 'false'
-    check_mode: yes
+    check_mode: true
     register: change_includeFTcomplianceChecks_check
 
   - assert:
@@ -198,7 +198,7 @@
   # Delete test cluster
   - name: Delete test cluster
     vmware_cluster:
-      validate_certs: False
+      validate_certs: false
       hostname: "{{ vcenter_hostname }}"
       username: "{{ vcenter_username }}"
       password: "{{ vcenter_password }}"

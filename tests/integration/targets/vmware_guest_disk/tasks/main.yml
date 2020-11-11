@@ -13,7 +13,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - datastore: "{{ rw_datastore }}"
@@ -25,7 +25,7 @@
           type: eagerzeroedthick
           unit_number: 2
   register: test_create_disk1
-  ignore_errors: True
+  ignore_errors: true
 
 - debug:
     msg: "{{ test_create_disk1 }}"
@@ -41,7 +41,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - datastore: "{{ rw_datastore }}"
@@ -84,7 +84,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - size_gb: 1
@@ -113,7 +113,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - size_gb: 1
@@ -144,7 +144,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - size_gb: 2
@@ -175,7 +175,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - size_gb: 3
@@ -206,7 +206,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - size_gb: 4
@@ -237,7 +237,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - state: "absent"
@@ -260,7 +260,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - datastore: "{{ rw_datastore }}"
@@ -287,7 +287,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - datastore: "{{ rw_datastore }}"
@@ -297,7 +297,7 @@
           size_gb: 1
           state: present
           type: eagerzeroedthick
-          sharing: True
+          sharing: true
           unit_number: 6
   register: test_create_disk_sharing
 
@@ -315,7 +315,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - datastore: "{{ rw_datastore }}"
@@ -326,9 +326,9 @@
           state: present
           type: thin
           unit_number: 5
-          sharing: True
+          sharing: true
   register: test_create_disk_sharing_invalid
-  ignore_errors: True
+  ignore_errors: true
 
 - debug:
     msg: "{{ test_create_disk_sharing_invalid }}"
@@ -344,7 +344,7 @@
     username: "{{ vcenter_username }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ dc1 }}"
-    validate_certs: no
+    validate_certs: false
     name: "{{ virtual_machines[0].name }}"
     disk:
         - state: "absent"

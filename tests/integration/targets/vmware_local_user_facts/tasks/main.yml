@@ -18,7 +18,7 @@
         hostname: "{{ esxi1 }}"
         username: "{{ esxi_user }}"
         password: "{{ esxi_password }}"
-        validate_certs: False
+        validate_certs: false
       register: all_user_facts
 
     - name: ensure user facts are gathered
@@ -29,7 +29,7 @@
 
     - <<: *user_fact_data
       name: Gather facts about users in check mode
-      check_mode: yes
+      check_mode: true
 
     - name: ensure user facts are gathered
       assert:

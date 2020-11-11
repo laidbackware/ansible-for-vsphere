@@ -18,7 +18,7 @@ module: vmware_deploy_ovf
 notes: []
 options:
     allow_duplicates:
-        default: "yes"
+        default: "True"
         description:
           - Whether or not to allow duplicate VM names. ESXi allows duplicates, vCenter may not.
         type: bool
@@ -59,7 +59,7 @@ options:
     fail_on_spec_warnings:
         description:
         - Cause the module to treat OVF Import Spec warnings as errors.
-        default: "no"
+        default: false
         type: bool
     folder:
         description:
@@ -148,7 +148,6 @@ EXAMPLES = r'''
     datastore: vsandatastore
     name: NewVM
     networks: "{u'VM Network':u'{{ ProvisioningNetworkLabel }}'}"
-    validate_certs: no
     power_on: no
     ovf: /absolute/path/to/template/mytemplate.ova
   delegate_to: localhost
@@ -357,7 +356,7 @@ class VMwareDeployOvf(PyVmomi):
             self.module.fail_json(msg='%(resource_pool)s could not be located' % self.params)
 
         for key, value in self.params['networks'].items():
-            network = find_network_by_name(self.content, value)
+            network = find_network_by_name(self.content, value, datacenter_name=self.datacenter)
             if not network:
                 self.module.fail_json(msg='%(network)s could not be located' % self.params)
             network_mapping = vim.OvfManager.NetworkMapping()

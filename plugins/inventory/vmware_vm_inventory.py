@@ -46,6 +46,7 @@ DOCUMENTATION = r'''
         port:
             description: Port number used to connect to vCenter or ESXi Server.
             default: 443
+            type: int
             env:
               - name: VMWARE_PORT
         validate_certs:
@@ -273,6 +274,29 @@ EXAMPLES = r'''
         - folder:
           - dev
           - prod
+
+# Use Category and it's relation with Tag
+    plugin: community.vmware.vmware_vm_inventory
+    strict: False
+    hostname: 10.65.201.128
+    username: administrator@vsphere.local
+    password: Esxi@123$%
+    validate_certs: False
+    hostnames:
+    - 'config.name'
+    properties:
+    - 'config.name'
+    - 'config.guestId'
+    - 'guest.ipAddress'
+    - 'summary.runtime.powerState'
+    with_tags: True
+    keyed_groups:
+    - key: tag_category.OS
+      prefix: "vmware_tag_os_category_"
+      separator: ""
+    with_nested_properties: True
+    filters:
+    - "tag_category.OS is defined and 'Linux' in tag_category.OS"
 '''
 
 import ssl
@@ -280,7 +304,6 @@ import atexit
 import base64
 from ansible.errors import AnsibleError, AnsibleParserError
 from ansible.module_utils._text import to_text, to_native
-from ansible.module_utils.common.dict_transformations import dict_merge
 from ansible.module_utils.common.dict_transformations import camel_dict_to_snake_dict
 from ansible.module_utils.common.dict_transformations import _snake_to_camel
 from ansible.utils.display import Display
@@ -388,6 +411,7 @@ class BaseVMwareInventory:
             service_instance = connect.SmartConnect(host=self.hostname, user=self.username,
                                                     pwd=self.password, sslContext=ssl_context,
                                                     port=self.port)
+
         except vim.fault.InvalidLogin as e:
             raise AnsibleParserError("Unable to log on to vCenter or ESXi API at %s:%s as %s: %s" % (self.hostname, self.port, self.username, e.msg))
         except vim.fault.NoPermission as e:
@@ -554,6 +578,21 @@ class BaseVMwareInventory:
         return []
 
 
+def in_place_merge(a, b):
+    """
+        Recursively merges second dict into the first.
+
+    """
+    if not isinstance(b, dict):
+        return b
+    for k, v in b.items():
+        if k in a and isinstance(a[k], dict):
+            a[k] = in_place_merge(a[k], v)
+        else:
+            a[k] = v
+    return a
+
+
 def to_nested_dict(vm_properties):
     """
     Parse properties from dot notation to dict
@@ -568,7 +607,7 @@ def to_nested_dict(vm_properties):
 
         for k in prop_parents:
             prop_dict = {k: prop_dict}
-        host_properties = dict_merge(host_properties, prop_dict)
+        host_properties = in_place_merge(host_properties, prop_dict)
 
     return host_properties
 
@@ -620,7 +659,7 @@ def parse_vim_property(vim_prop):
     elif isinstance(vim_prop, list):
         return [parse_vim_property(x) for x in vim_prop]
 
-    elif prop_type in ['bool', 'int', 'NoneType']:
+    elif prop_type in ['bool', 'int', 'NoneType', 'dict']:
         return vim_prop
 
     elif prop_type in ['binary']:
@@ -721,6 +760,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             query_props = None
             vm_properties.remove('all')
         else:
+            if 'runtime.connectionState' not in vm_properties:
+                vm_properties.append('runtime.connectionState')
             query_props = [x for x in vm_properties if x != "customValue"]
 
         objects = self.pyv.get_managed_objects_properties(
@@ -733,23 +774,22 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         tags_info = dict()
         if self.pyv.with_tags:
             tag_svc = self.pyv.rest_content.tagging.Tag
-            tag_association = self.pyv.rest_content.tagging.TagAssociation
+            cat_svc = self.pyv.rest_content.tagging.Category
 
             tags = tag_svc.list()
             for tag in tags:
                 tag_obj = tag_svc.get(tag)
-                tags_info[tag_obj.id] = tag_obj.name
+                tags_info[tag_obj.id] = (tag_obj.name, cat_svc.get(tag_obj.category_id).name)
 
         hostnames = self.get_option('hostnames')
 
         for vm_obj in objects:
-            if not vm_obj.obj.config:
-                # Sometime orphaned VMs return no configurations
-                continue
-
             properties = dict()
             for vm_obj_property in vm_obj.propSet:
                 properties[vm_obj_property.name] = vm_obj_property.val
+
+            if (properties.get('runtime.connectionState') or properties['runtime'].connectionState) == 'orphaned':
+                continue
 
             # Custom values
             if 'customValue' in vm_properties:
@@ -764,8 +804,19 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 # Add virtual machine to appropriate tag group
                 vm_mo_id = vm_obj.obj._GetMoId()  # pylint: disable=protected-access
                 vm_dynamic_id = DynamicID(type='VirtualMachine', id=vm_mo_id)
-                attached_tags = [tags_info[tag_id] for tag_id in tag_association.list_attached_tags(vm_dynamic_id)]
-                properties['tags'] = attached_tags
+                tag_association = self.pyv.rest_content.tagging.TagAssociation
+                properties['tags'] = []
+                properties['categories'] = []
+                properties['tag_category'] = {}
+                for tag_id in tag_association.list_attached_tags(vm_dynamic_id):
+                    # Add tags related to VM
+                    properties['tags'].append(tags_info[tag_id][0])
+                    # Add categories related to VM
+                    properties['categories'].append(tags_info[tag_id][1])
+                    # Add tag and categories related to VM
+                    if tags_info[tag_id][1] not in properties['tag_category']:
+                        properties['tag_category'][tags_info[tag_id][1]] = []
+                    properties['tag_category'][tags_info[tag_id][1]].append(tags_info[tag_id][0])
 
             # Path
             with_path = self.get_option('with_path')
