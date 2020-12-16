@@ -208,6 +208,8 @@ class VmwareCategory(VmwareRestClient):
                     obj_types_set.append('ClusterComputeResource')
                 elif lower_obj_type == 'content library':
                     obj_types_set.append('com.vmware.content.Library')
+                elif lower_obj_type == 'datastore':
+                    obj_types_set.append('urn:vim25:Datastore')
                 elif lower_obj_type == 'datastore cluster':
                     obj_types_set.append('StoragePod')
                 elif lower_obj_type == 'distributed port group':
