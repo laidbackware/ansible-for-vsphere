@@ -71,6 +71,12 @@ options:
      - Destination datacenter for the deploy operation
      required: True
      type: str
+   show_extra_config:
+     description:
+     - Show extra config for a VM. 
+     - In the UI, this is the information which appears under advanced VM settings.
+     default: false
+     type: bool
    tags:
      description:
      - Whether to show tags or not.
@@ -271,6 +277,8 @@ def main():
         datacenter=dict(type='str', required=True),
         tags=dict(type='bool', default=False),
         schema=dict(type='str', choices=['summary', 'vsphere'], default='summary'),
+        show_advanced=dict(type='bool', default=False),
+        show_extra_config=dict(type='bool', default=False),
         properties=dict(type='list', elements='str'),
         tag_details=dict(type='bool', default=False),
     )
@@ -303,6 +311,11 @@ def main():
                 instance = pyv.gather_facts(vm)
             else:
                 instance = pyv.to_json(vm, module.params['properties'])
+            if module.params.get('show_extra_config'):
+              extra_config = {}
+              for item in vm.config.extraConfig:
+                extra_config[item.key] = item.value
+              instance.update(extra_config=extra_config)
             if module.params.get('tags'):
                 if not HAS_VSPHERE:
                     module.fail_json(msg="Unable to find 'vCloud Suite SDK' Python library which is required."
