@@ -9,15 +9,15 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: vmware_namespace_cluster_vds_manager
-short_description: Create, update and delete VMware content library
+short_description: Enable, disable and update namespaces on a vSphere cluster
 description:
 - TODO
 author:
-- Pavan Bidkar (@pgbidkar)
+- Matt Proud (@laidbackware)
 notes:
 - Tested on vSphere 7.0u1
 requirements:
-- python >= 3.7
+- python >= 3.5
 - PyVmomi
 - vSphere Automation SDK
 options:
