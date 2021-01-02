@@ -302,7 +302,7 @@ class VmwareContentLibCreate(VmwareRestClient):
             content_library_info["library_subscription_ssl_thumbprint"] = spec.subscription_info.ssl_thumbprint
         self.module.exit_json(
             changed=True,
-            content_library_info = content_library_info
+            content_library_info=content_library_info
         )
 
     def state_create_library(self):
@@ -420,7 +420,7 @@ def main():
     module = AnsibleModule(argument_spec=argument_spec,
                            supports_check_mode=True,
                            required_if=[('library_type', 'subscribed', ['subscription_url'])]
-                          )
+    )
 
     vmware_contentlib_create = VmwareContentLibCreate(module)
     vmware_contentlib_create.process_state()
