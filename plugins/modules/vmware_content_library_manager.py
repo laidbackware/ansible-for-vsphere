@@ -419,7 +419,7 @@ def main():
     )
     module = AnsibleModule(argument_spec=argument_spec,
                            supports_check_mode=True,
-                           required_if=(('library_type', 'subscribed', ['subscription_url']))
+                           required_if=[('library_type', 'subscribed', ['subscription_url'])]
                           )
 
     vmware_contentlib_create = VmwareContentLibCreate(module)
