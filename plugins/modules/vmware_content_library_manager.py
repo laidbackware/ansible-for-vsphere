@@ -277,18 +277,24 @@ class VmwareContentLibCreate(VmwareRestClient):
         """
         Create or update call and exit cleanly if call completes
         """
-        try:
+        if self.module.check_mode:
             if update:
-                self.library_service.update(library_id, spec)
-                action = "updated"
+                action = "would be updated"
             else:
-                library_id = self.library_service.create(create_spec=spec,
-                                                         client_token=str(uuid.uuid4()))
-                action = "created"
-        except ResourceInaccessible as e:
-            message = ("vCenter Failed to make connection to %s with exception: %s    "
-                       "If using https, check that the ssl thumbprint is valid" % (self.subscription_url, str(e)))
-            self.module.fail_json(msg=message)
+                action = "would be created"
+        else:
+            try:
+                if update:
+                    self.library_service.update(library_id, spec)
+                    action = "updated"
+                else:
+                    library_id = self.library_service.create(create_spec=spec,
+                                                            client_token=str(uuid.uuid4()))
+                    action = "created"
+            except ResourceInaccessible as e:
+                message = ("vCenter Failed to make connection to %s with exception: %s    "
+                        "If using https, check that the ssl thumbprint is valid" % (self.subscription_url, str(e)))
+                self.module.fail_json(msg=message)
 
         content_library_info = dict(
             msg="Content Library '%s' %s." % (spec.name, action),
