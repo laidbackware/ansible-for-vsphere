@@ -278,10 +278,7 @@ class VmwareContentLibCreate(VmwareRestClient):
         Create or update call and exit cleanly if call completes
         """
         if self.module.check_mode:
-            if update:
-                action = "would be updated"
-            else:
-                action = "would be created"
+            'would be updated' if update else 'would be created'
         else:
             try:
                 if update:
