@@ -205,33 +205,39 @@ class VmwareCategory(VmwareRestClient):
                     obj_types_set = []
                     break
                 if lower_obj_type == 'cluster':
-                    obj_types_set.append('ClusterComputeResource')
+                    obj_types_set.append('urn:vim25:ClusterComputeResource') #urn:vim25:
                 elif lower_obj_type == 'content library':
-                    obj_types_set.append('com.vmware.content.Library')
+                    obj_types_set.append('com.vmware.content.Library') # Breaks when adding urn:vmomi
+                elif lower_obj_type == 'datastore':
+                    obj_types_set.append('urn:vim25:Datastore')
                 elif lower_obj_type == 'datastore cluster':
-                    obj_types_set.append('StoragePod')
+                    obj_types_set.append('urn:vim25:StoragePod') # urn:vim25:
                 elif lower_obj_type == 'distributed port group':
-                    obj_types_set.append('DistributedVirtualPortgroup')
+                    obj_types_set.append('DistributedVirtualPortgroup') # Works as is
                 elif lower_obj_type == 'distributed switch':
                     obj_types_set.extend(['VmwareDistributedVirtualSwitch', 'DistributedVirtualSwitch'])
+                elif lower_obj_type == 'folder':
+                    obj_types_set.append('urn:vmomi:folder') # Not vim25 and doesn't work
                 elif lower_obj_type == 'host':
-                    obj_types_set.append('HostSystem')
+                    obj_types_set.append('urn:vim25:HostSystem')
                 elif lower_obj_type == 'library item':
-                    obj_types_set.append('com.vmware.content.library.Item')
+                    obj_types_set.append('urn:vmomi:com.vmware.content.library.Item')
                 elif lower_obj_type == 'resource pool':
-                    obj_types_set.append('ResourcePool')
+                    obj_types_set.append('ResourcePool') # Work as is
                 elif lower_obj_type == 'vapp':
-                    obj_types_set.append('VirtualApp')
+                    obj_types_set.append('VirtualApp') # Works as is
                 elif lower_obj_type == 'virtual machine':
-                    obj_types_set.append('VirtualMachine')
+                    obj_types_set.append('VirtualMachine') # work with or without vim25
                 elif lower_obj_type == 'network':
-                    obj_types_set.extend(['Network', 'HostNetwork', 'OpaqueNetwork'])
+                    obj_types_set.extend(['Network', 'HostNetwork', 'OpaqueNetwork']) # Breaks when adding urn:vim25
                 elif lower_obj_type == 'host network':
-                    obj_types_set.append('HostNetwork')
+                    obj_types_set.append('HostNetwork') # Works as is
                 elif lower_obj_type == 'opaque network':
-                    obj_types_set.append('OpaqueNetwork')
+                    obj_types_set.append('OpaqueNetwork') # Works as is
+                elif lower_obj_type == 'Resource Pool':
+                    obj_types_set.append('ResourcePool') # Not vim25
                 else:
-                    obj_types_set.append(obj_type)
+                    obj_types_set.append(obj_type) # "urn:vim25:%s" % 
 
         category_spec.associable_types = set(obj_types_set)
 
